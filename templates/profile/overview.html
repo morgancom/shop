@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Profile Overview{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-header">
+        <div class="profile-cover">
+            <img src="{{ url_for('static', filename='images/covers/default-cover.jpg') }}" alt="Profile Cover">
+            <button class="edit-cover">
+                <i class="fas fa-camera"></i>
+                Change Cover
+            </button>
+        </div>
+        <div class="profile-info">
+            <div class="profile-avatar">
+                <img src="{{ url_for('static', filename='images/avatars/' + user.avatar) }}" alt="{{ user.name }}">
+                <button class="edit-avatar">
+                    <i class="fas fa-camera"></i>
+                </button>
+            </div>
+            <div class="profile-details">
+                <h1>{{ user.name }}</h1>
+                <p class="profile-meta">
+                    <span><i class="fas fa-calendar"></i> Joined {{ user.created_at.strftime('%B %Y') }}</span>
+                    <span><i class="fas fa-shopping-bag"></i> {{ orders|length }} Orders</span>
+                </p>
+            </div>
+            <div class="profile-actions">
+                <a href="{{ url_for('profile_settings') }}" class="btn btn-primary">
+                    <i class="fas fa-edit"></i> Edit Profile
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="profile-nav">
+        <a href="{{ url_for('profile', tab='overview') }}" class="active">Overview</a>
+        <a href="{{ url_for('profile', tab='orders') }}">Orders</a>
+        <a href="{{ url_for('profile', tab='wishlist') }}">Wishlist</a>
+        <a href="{{ url_for('profile_settings') }}">Settings</a>
+    </div>
+
+    <div class="profile-content">
+        <div class="profile-grid">
+            <!-- Recent Orders -->
+            <div class="profile-card">
+                <div class="card-header">
+                    <h2>Recent Orders</h2>
+                    <a href="{{ url_for('orders') }}" class="view-all">View All</a>
+                </div>
+                <div class="card-content">
+                    {% if recent_orders %}
+                        <div class="orders-list">
+                            {% for order in recent_orders %}
+                            <div class="order-item">
+                                <div class="order-info">
+                                    <span class="order-id">#{{ order.id }}</span>
+                                    <span class="order-date">{{ order.created_at.strftime('%Y-%m-%d') }}</span>
+                                </div>
+                                <div class="order-status {{ order.status }}">{{ order.status }}</div>
+                                <div class="order-total">${{ "%.2f"|format(order.total) }}</div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-shopping-bag"></i>
+                            <p>No orders yet</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Wishlist Preview -->
+            <div class="profile-card">
+                <div class="card-header">
+                    <h2>Wishlist</h2>
+                    <a href="{{ url_for('profile', tab='wishlist') }}" class="view-all">View All</a>
+                </div>
+                <div class="card-content">
+                    {% if wishlist_items %}
+                        <div class="wishlist-grid">
+                            {% for item in wishlist_items[:4] %}
+                            <div class="wishlist-item">
+                                <img src="{{ url_for('static', filename='images/products/' + item.product.image) }}" 
+                                     alt="{{ item.product.name }}">
+                                <div class="item-details">
+                                    <h3>{{ item.product.name }}</h3>
+                                    <p>${{ "%.2f"|format(item.product.price) }}</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-heart"></i>
+                            <p>Your wishlist is empty</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/profile.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-slider swiper">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide hero-slide" style="background-image: url('{{ url_for('static', filename='images/hero/hero1.jpg') }}')">
+                <div class="container">
+                    <div class="hero-content">
+                        <span class="hero-subtitle">Summer Collection</span>
+                        <h1 class="hero-title">New Arrivals 2023</h1>
+                        <p class="hero-text">Discover our curated selection of premium products</p>
+                        <a href="{{ url_for('products') }}" class="btn btn-primary btn-lg">Shop Now</a>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="section features">
+    <div class="container">
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-shipping-fast"></i>
+                </div>
+                <h3 class="feature-title">Free Shipping</h3>
+                <p class="feature-text">On all orders over $50</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+                <h3 class="feature-title">Easy Returns</h3>
+                <p class="feature-text">30 day return policy</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h3 class="feature-title">Secure Payment</h3>
+                <p class="feature-text">100% secure checkout</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-headset"></i>
+                </div>
+                <h3 class="feature-title">24/7 Support</h3>
+                <p class="feature-text">Dedicated support</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Featured Products -->
+<section class="section featured-products">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Featured Products</h2>
+            <a href="{{ url_for('products') }}" class="section-link">View All <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="product-slider swiper">
+            <div class="swiper-wrapper">
+                {% for product in featured_products %}
+                <div class="swiper-slide">
+                    {% include 'partials/product_card.html' %}
+                </div>
+                {% endfor %}
+            </div>
+            <div class="swiper-pagination"></div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+        </div>
+    </div>
+</section>
+
+<!-- New Arrivals -->
+<section class="section new-arrivals">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">New Arrivals</h2>
+            <a href="{{ url_for('products') }}" class="section-link">View All <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="product-grid">
+            {% for product in new_products %}
+                {% include 'partials/product_card.html' %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Best Sellers -->
+<section class="section best-sellers">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Best Sellers</h2>
+            <a href="{{ url_for('products') }}" class="section-link">View All <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="product-slider swiper">
+            <div class="swiper-wrapper">
+                {% for product in best_sellers %}
+                <div class="swiper-slide">
+                    {% include 'partials/product_card.html' %}
+                </div>
+                {% endfor %}
+            </div>
+            <div class="swiper-pagination"></div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="section testimonials">
+    <div class="container">
+        <h2 class="section-title">What Our Customers Say</h2>
+        <p class="section-subtitle">Hear from our satisfied customers</p>
+        <div class="testimonial-slider swiper">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide testimonial-slide">
+                    <div class="testimonial-content">
+                        <div class="testimonial-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="testimonial-text">"The quality of these products exceeded my expectations. Fast shipping and excellent customer service too!"</p>
+                        <div class="testimonial-author">
+                            <img src="{{ url_for('static', filename='images/testimonials/user1.jpg') }}" alt="Sarah J." class="testimonial-avatar">
+                            <div class="testimonial-author-info">
+                                <h4>Sarah J.</h4>
+                                <p>Verified Buyer</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide testimonial-slide">
+                    <div class="testimonial-content">
+                        <div class="testimonial-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="testimonial-text">"I've ordered multiple times and each experience has been flawless. Highly recommend this store!"</p>
+                        <div class="testimonial-author">
+                            <img src="{{ url_for('static', filename='images/testimonials/user2.jpg') }}" alt="Michael T." class="testimonial-avatar">
+                            <div class="testimonial-author-info">
+                                <h4>Michael T.</h4>
+                                <p>Verified Buyer</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide testimonial-slide">
+                    <div class="testimonial-content">
+                        <div class="testimonial-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <p class="testimonial-text">"Great selection of products and the website is so easy to use. Will definitely shop here again."</p>
+                        <div class="testimonial-author">
+                            <img src="{{ url_for('static', filename='images/testimonials/user3.jpg') }}" alt="Emily R." class="testimonial-avatar">
+                            <div class="testimonial-author-info">
+                                <h4>Emily R.</h4>
+                                <p>Verified Buyer</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="swiper-pagination"></div>
+        </div>
+    </div>
+</section>
+
+<!-- Newsletter -->
+<section class="section newsletter">
+    <div class="container">
+        <div class="newsletter-content">
+            <h2 class="newsletter-title">Join Our Newsletter</h2>
+            <p class="newsletter-text">Subscribe to get updates on new arrivals, special offers and other discount information.</p>
+            <form class="newsletter-form">
+                <input type="email" placeholder="Enter your email" required>
+                <button type="submit" class="btn btn-primary">Subscribe</button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+<script src="{{ url_for('static', filename='js/index.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,262 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-header">
+        <div class="profile-cover">
+            <img src="{{ url_for('static', filename='images/covers/default-cover.jpg') }}" alt="Profile cover">
+            {% if session.user_id == user.id %}
+            <button class="edit-cover">
+                <i class="fas fa-camera"></i> Change Cover
+            </button>
+            {% endif %}
+        </div>
+        <div class="profile-info">
+            <div class="profile-avatar">
+                <img src="{{ url_for('static', filename='images/avatars/' + user.avatar) }}" alt="{{ user.name }}">
+                {% if session.user_id == user.id %}
+                <button class="edit-avatar">
+                    <i class="fas fa-camera"></i>
+                </button>
+                {% endif %}
+            </div>
+            <h1>{{ user.name }}</h1>
+            <p class="user-type">{{ user.user_type.title() }}</p>
+            <p class="join-date">Member since {{ user.created_at.strftime('%B %Y') }}</p>
+        </div>
+    </div>
+
+    <div class="profile-content">
+        <div class="profile-nav">
+            <button class="nav-item active" data-tab="overview">Overview</button>
+            <button class="nav-item" data-tab="orders">Orders</button>
+            <button class="nav-item" data-tab="settings">Settings</button>
+            {% if user.user_type == 'supplier' %}
+            <button class="nav-item" data-tab="products">My Products</button>
+            {% endif %}
+        </div>
+
+        <div class="tab-content">
+            <!-- Overview Tab -->
+            <div class="tab-pane active" id="overview">
+                <div class="info-card">
+                    <h3>Contact Information</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <i class="fas fa-envelope"></i>
+                            <div class="info-details">
+                                <label>Email</label>
+                                <span>{{ user.email }}</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-phone"></i>
+                            <div class="info-details">
+                                <label>Phone</label>
+                                <span>{{ user.phone or 'Not provided' }}</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div class="info-details">
+                                <label>Address</label>
+                                <span>{{ user.address or 'Not provided' }}</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-globe"></i>
+                            <div class="info-details">
+                                <label>Website</label>
+                                <span>{{ user.website or 'Not provided' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% if user.bio %}
+                <div class="info-card">
+                    <h3>About</h3>
+                    <p>{{ user.bio }}</p>
+                </div>
+                {% endif %}
+
+                {% if user.social_media %}
+                <div class="info-card">
+                    <h3>Social Media</h3>
+                    <div class="social-links">
+                        {% if user.social_media.facebook %}
+                        <a href="{{ user.social_media.facebook }}" target="_blank">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                        {% endif %}
+                        {% if user.social_media.twitter %}
+                        <a href="{{ user.social_media.twitter }}" target="_blank">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        {% endif %}
+                        {% if user.social_media.instagram %}
+                        <a href="{{ user.social_media.instagram }}" target="_blank">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        {% endif %}
+                        {% if user.social_media.linkedin %}
+                        <a href="{{ user.social_media.linkedin }}" target="_blank">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Orders Tab -->
+            <div class="tab-pane" id="orders">
+                {% if user.orders %}
+                    <div class="orders-grid">
+                        {% for order in user.orders %}
+                        <div class="order-card">
+                            <div class="order-header">
+                                <span class="order-id">Order #{{ order.id }}</span>
+                                <span class="order-date">{{ order.created_at.strftime('%B %d, %Y') }}</span>
+                                <span class="order-status {{ order.status }}">{{ order.status }}</span>
+                            </div>
+                            <div class="order-items">
+                                {% for item in order.order_items %}
+                                <div class="order-item">
+                                    <img src="{{ url_for('static', filename='images/' + item.product.image) }}" alt="{{ item.product.name }}">
+                                    <div class="item-details">
+                                        <h4>{{ item.product.name }}</h4>
+                                        <p>Quantity: {{ item.quantity }}</p>
+                                        <p class="item-price">${{ "%.2f"|format(item.price) }}</p>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <div class="order-total">
+                                Total: ${{ "%.2f"|format(order.total) }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-shopping-bag"></i>
+                        <h3>No Orders Yet</h3>
+                        <p>You haven't placed any orders yet.</p>
+                        <a href="{{ url_for('products') }}" class="btn-primary">Start Shopping</a>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Settings Tab -->
+            <div class="tab-pane" id="settings">
+                {% if session.user_id == user.id %}
+                <form method="POST" class="settings-form" enctype="multipart/form-data">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" id="name" name="name" value="{{ user.name }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" value="{{ user.email }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone</label>
+                            <input type="tel" id="phone" name="phone" value="{{ user.phone }}">
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="address">Address</label>
+                            <textarea id="address" name="address" rows="3">{{ user.address }}</textarea>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="bio">Bio</label>
+                            <textarea id="bio" name="bio" rows="4">{{ user.bio }}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="website">Website</label>
+                            <input type="url" id="website" name="website" value="{{ user.website }}">
+                        </div>
+                    </div>
+
+                    <div class="social-media-section">
+                        <h3>Social Media Links</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="facebook">Facebook</label>
+                                <input type="url" id="facebook" name="facebook" value="{{ user.social_media.facebook if user.social_media }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="twitter">Twitter</label>
+                                <input type="url" id="twitter" name="twitter" value="{{ user.social_media.twitter if user.social_media }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="instagram">Instagram</label>
+                                <input type="url" id="instagram" name="instagram" value="{{ user.social_media.instagram if user.social_media }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="linkedin">LinkedIn</label>
+                                <input type="url" id="linkedin" name="linkedin" value="{{ user.social_media.linkedin if user.social_media }}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Save Changes</button>
+                    </div>
+                </form>
+                {% endif %}
+            </div>
+
+            <!-- Products Tab (for suppliers) -->
+            {% if user.user_type == 'supplier' %}
+            <div class="tab-pane" id="products">
+                {% if user.products %}
+                    <div class="products-grid">
+                        {% for product in user.products %}
+                        <div class="product-card">
+                            <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}">
+                            <div class="product-details">
+                                <h4>{{ product.name }}</h4>
+                                <p class="product-price">${{ "%.2f"|format(product.price) }}</p>
+                                <p class="product-stock">Stock: {{ product.stock }}</p>
+                                {% if session.user_id == user.id %}
+                                <div class="product-actions">
+                                    <a href="{{ url_for('edit_product', id=product.id) }}" class="btn-edit">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                    <button class="btn-delete" data-product-id="{{ product.id }}">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-box-open"></i>
+                        <h3>No Products</h3>
+                        <p>You haven't added any products yet.</p>
+                        {% if session.user_id == user.id %}
+                        <a href="{{ url_for('add_product') }}" class="btn-primary">Add Product</a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/profile.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/checkout.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="checkout-container">
+    <div class="checkout-header">
+        <h1>Checkout</h1>
+        <div class="checkout-steps">
+            <div class="step active"><span>1</span> Shipping</div>
+            <div class="step"><span>2</span> Payment</div>
+            <div class="step"><span>3</span> Review</div>
+        </div>
+    </div>
+    
+    {% if current_user.is_authenticated %}
+    <div class="checkout-content">
+        <div class="checkout-form">
+            <form id="checkoutForm" method="POST" action="{{ url_for('checkout') }}">
+                <!-- Shipping Section -->
+                <div class="form-section">
+                    <h2><i class="fas fa-truck"></i> Shipping Information</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstName">First Name</label>
+                            <input type="text" id="firstName" name="firstName" value="{{ current_user.first_name or '' }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name</label>
+                            <input type="text" id="lastName" name="lastName" value="{{ current_user.last_name or '' }}" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" value="{{ current_user.email }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Street Address</label>
+                        <input type="text" id="address" name="address" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="city">City</label>
+                            <input type="text" id="city" name="city" required>
+                        </div>
+                        <div class="form-group">
+                        <label for="state">State</label>
+                        <input type="text" id="state" name="state" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="zipCode">ZIP/Postal Code</label>
+                            <input type="text" id="zipCode" name="zipCode" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="country">Country</label>
+                            <input type="text" id="country" name="country" value="United States" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="saveAddress" name="saveAddress">
+                            Save this address for future purchases
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Payment Section -->
+                <div class="form-section">
+                    <h2><i class="fas fa-credit-card"></i> Payment Method</h2>
+                    
+                    <div class="payment-tabs">
+                        <div class="payment-tab active" data-tab="credit-card">
+                            <i class="far fa-credit-card"></i> Credit/Debit Card
+                        </div>
+                        <div class="payment-tab" data-tab="paypal">
+                            <i class="fab fa-paypal"></i> PayPal
+                        </div>
+                        <div class="payment-tab" data-tab="cashapp">
+                            <i class="fas fa-dollar-sign"></i> CashApp
+                        </div>
+                    </div>
+                    
+                    <!-- Credit Card Payment -->
+                    <div class="payment-content active" id="credit-card-content">
+                        <div class="form-group">
+                            <label for="cardName">Name on Card</label>
+                            <input type="text" id="cardName" name="cardName" placeholder="As shown on card" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cardNumber">Card Number</label>
+                            <input type="text" id="cardNumber" name="cardNumber" placeholder="1234 5678 9012 3456" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="expiry">Expiry Date</label>
+                                <input type="text" id="expiry" name="expiry" placeholder="MM/YY" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="cvv">CVV</label>
+                                <input type="text" id="cvv" name="cvv" placeholder="123" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- PayPal Payment -->
+                    <div class="payment-content" id="paypal-content">
+                        <div class="paypal-info">
+                            <p>You will be redirected to PayPal to complete your payment.</p>
+                            <img src="{{ url_for('static', filename='images/paypal-logo.png') }}" alt="PayPal" class="paypal-logo">
+                        </div>
+                    </div>
+                    
+                    <!-- CashApp Payment -->
+                    <div class="payment-content" id="cashapp-content">
+                        <div class="cashapp-info">
+                            <p>Please send payment to $ExampleStore</p>
+                            <div class="payment-qr">
+                                <img src="{{ url_for('static', filename='images/cashapp-qr.png') }}" alt="CashApp QR Code">
+                                <button class="copy-btn" data-clipboard-text="$ExampleStore">
+                                    <i class="fas fa-copy"></i> Copy CashApp ID
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="order-summary">
+                    <h2><i class="fas fa-receipt"></i> Order Summary</h2>
+                    <div class="summary-items">
+                        {% for item in cart_items %}
+                        <div class="summary-item">
+                            <div class="item-image">
+                                <img src="{{ url_for('static', filename='images/products/' + item.product.image) }}" alt="{{ item.product.name }}">
+                            </div>
+                            <div class="item-details">
+                                <h4>{{ item.product.name }}</h4>
+                                <p>Quantity: {{ item.quantity }}</p>
+                                <p class="item-price">${{ "%.2f"|format(item.product.price * item.quantity) }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="summary-totals">
+                        <div class="summary-row">
+                            <span>Subtotal</span>
+                            <span>${{ "%.2f"|format(subtotal) }}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Shipping</span>
+                            <span>${{ "%.2f"|format(shipping) }}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Tax</span>
+                            <span>${{ "%.2f"|format(tax) }}</span>
+                        </div>
+                        {% if discount > 0 %}
+                        <div class="summary-row discount">
+                            <span>Discount</span>
+                            <span>-${{ "%.2f"|format(discount) }}</span>
+                        </div>
+                        {% endif %}
+                        <div class="summary-total">
+                            <span>Total</span>
+                            <span>${{ "%.2f"|format(total) }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="terms-agreement">
+                        <label>
+                            <input type="checkbox" id="agreeTerms" name="agreeTerms" required>
+                            I agree to the <a href="{{ url_for('terms') }}">Terms and Conditions</a> and <a href="{{ url_for('privacy') }}">Privacy Policy</a>
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="place-order-btn">
+                        <i class="fas fa-lock"></i> Complete Order (${{ "%.2f"|format(total) }})
+                    </button>
+                    
+                    <div class="secure-checkout">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Secure Checkout • 256-bit SSL Encryption</span>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% else %}
+    <div class="auth-required">
+        <div class="auth-message">
+            <i class="fas fa-lock"></i>
+            <h2>Please Sign In to Continue</h2>
+            <p>You need to be logged in to complete your purchase.</p>
+            <div class="auth-actions">
+                <a href="{{ url_for('login', next=url_for('checkout')) }}" class="btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </a>
+                <a href="{{ url_for('register', next=url_for('checkout')) }}" class="btn-secondary">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </a>
+            </div>
+            <div class="guest-checkout">
+                <p>Or continue as <a href="{{ url_for('guest_checkout') }}">guest</a></p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/checkout.js') }}"></script>
+<script src="https://js.stripe.com/v3/"></script>
+{% endblock %}

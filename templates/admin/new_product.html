@@ -1,0 +1,76 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Add New Product{% endblock %}
+{% block page_title %}Add New Product{% endblock %}
+
+{% block content %}
+<div class="admin-form">
+    <form method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="name" class="form-label">Product Name</label>
+            <input type="text" id="name" name="name" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label for="description" class="form-label">Description</label>
+            <textarea id="description" name="description" class="form-control" rows="4" required></textarea>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="price" class="form-label">Price ($)</label>
+                <input type="number" id="price" name="price" class="form-control" step="0.01" min="0" required>
+            </div>
+
+            <div class="form-group col-md-6">
+                <label for="stock" class="form-label">Stock</label>
+                <input type="number" id="stock" name="stock" class="form-control" min="0" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="category" class="form-label">Category</label>
+            <select id="category" name="category" class="form-control" required>
+                <option value="">Select Category</option>
+                {% for category in categories %}
+                    <option value="{{ category[0] }}">{{ category[0] }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="image" class="form-label">Product Image</label>
+            <div class="image-upload">
+                <input type="file" id="image" name="image" class="form-control" accept="image/*">
+                <div class="image-preview" id="imagePreview">
+                    <img src="{{ url_for('static', filename='images/placeholder.png') }}" alt="Preview">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-admin btn-primary">
+                <i class="fas fa-save"></i> Create Product
+            </button>
+            <a href="{{ url_for('admin_products') }}" class="btn-admin btn-outline">
+                <i class="fas fa-times"></i> Cancel
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('image').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.querySelector('#imagePreview img').src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+});
+</script>
+{% endblock %}

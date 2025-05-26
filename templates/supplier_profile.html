@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}{{ supplier.name }} - Supplier Profile{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/supplier.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="supplier-profile">
+    <div class="profile-header">
+        <div class="profile-cover">
+            <img src="{{ url_for('static', filename='images/suppliers/' + supplier.cover_image) }}" alt="Cover image">
+        </div>
+        <div class="profile-info">
+            <div class="profile-avatar">
+                <img src="{{ url_for('static', filename='images/suppliers/' + supplier.avatar) }}" alt="{{ supplier.name }}">
+            </div>
+            <div class="profile-details">
+                <h1>{{ supplier.name }}</h1>
+                <div class="profile-meta">
+                    <span class="rating">
+                        {% for _ in range(supplier.rating|int) %}
+                            <i class="fas fa-star"></i>
+                        {% endfor %}
+                        {% if supplier.rating % 1 != 0 %}
+                            <i class="fas fa-star-half-alt"></i>
+                        {% endif %}
+                        <span>({{ supplier.rating }})</span>
+                    </span>
+                    <span class="products-count">
+                        <i class="fas fa-box"></i> {{ supplier.products|length }} Products
+                    </span>
+                    <span class="joined-date">
+                        <i class="fas fa-calendar-alt"></i> Joined {{ supplier.join_date.strftime('%B %Y') }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="profile-content">
+        <div class="content-nav">
+            <button class="nav-item active" data-tab="overview">Overview</button>
+            <button class="nav-item" data-tab="products">Products</button>
+            <button class="nav-item" data-tab="reviews">Reviews</button>
+            <button class="nav-item" data-tab="contact">Contact</button>
+        </div>
+
+        <div class="tab-content">
+            <div class="tab-pane active" id="overview">
+                <div class="company-overview">
+                    <h2>Company Overview</h2>
+                    <p>{{ supplier.description }}</p>
+                    
+                    <div class="overview-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-truck"></i>
+                            <span class="stat-value">{{ supplier.shipping_time }}</span>
+                            <span class="stat-label">Avg. Shipping Time</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span class="stat-value">{{ supplier.fulfillment_rate }}%</span>
+                            <span class="stat-label">Fulfillment Rate</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-comments"></i>
+                            <span class="stat-value">{{ supplier.response_time }}</span>
+                            <span class="stat-label">Response Time</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane" id="products">
+                <div class="products-grid">
+                    {% for product in supplier.products %}
+                        <div class="product-card">
+                            <div class="product-image">
+                                <img src="{{ url_for('static', filename='images/products/' + product.image) }}" alt="{{ product.name }}">
+                            </div>
+                            <div class="product-info">
+                                <h3><a href="{{ url_for('product_detail', id=product.id) }}">{{ product.name }}</a></h3>
+                                <div class="product-price">${{ "%.2f"|format(product.price) }}</div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="tab-pane" id="reviews">
+                <div class="reviews-container">
+                    {% for review in supplier.reviews %}
+                        <div class="review-card">
+                            <div class="review-header">
+                                <img src="{{ url_for('static', filename='images/users/' + review.user.avatar) }}" alt="{{ review.user.name }}">
+                                <div class="review-meta">
+                                    <h4>{{ review.user.name }}</h4>
+                                    <div class="review-rating">
+                                        {% for _ in range(review.rating) %}
+                                            <i class="fas fa-star"></i>
+                                        {% endfor %}
+                                    </div>
+                                    <span class="review-date">{{ review.date.strftime('%B %d, %Y') }}</span>
+                                </div>
+                            </div>
+                            <p class="review-content">{{ review.content }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="tab-pane" id="contact">
+                <div class="contact-form-container">
+                    <h2>Contact Supplier</h2>
+                    <form id="contactForm" class="contact-form">
+                        <div class="form-group">
+                            <label for="subject">Subject</label>
+                            <input type="text" id="subject" name="subject" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" rows="4" required></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn">
+                            <i class="fas fa-paper-plane"></i> Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/supplier.js') }}"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+{% endblock %}

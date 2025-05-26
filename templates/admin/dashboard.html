@@ -1,0 +1,128 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-header">
+            <div class="stat-icon sales">
+                <i class="fas fa-dollar-sign"></i>
+            </div>
+        </div>
+        <div class="stat-value">{{ stats.total_orders }}</div>
+        <div class="stat-label">Total Orders</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-header">
+            <div class="stat-icon users">
+                <i class="fas fa-users"></i>
+            </div>
+        </div>
+        <div class="stat-value">{{ stats.total_users }}</div>
+        <div class="stat-label">Total Users</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-header">
+            <div class="stat-icon products">
+                <i class="fas fa-box"></i>
+            </div>
+        </div>
+        <div class="stat-value">{{ stats.total_products }}</div>
+        <div class="stat-label">Total Products</div>
+    </div>
+
+    <div class="stat-card">
+        <i class="fas fa-tag"></i>
+        <div class="stat-content">
+            <h3>Active Deals</h3>
+            <p>{{ stats.active_deals }}</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <i class="fas fa-box"></i>
+        <div class="stat-content">
+            <h3>New Arrivals</h3>
+            <p>{{ stats.new_arrivals }}</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <i class="fas fa-building"></i>
+        <div class="stat-content">
+            <h3>Total Brands</h3>
+            <p>{{ stats.total_brands }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="dashboard-grid">
+    <!-- Recent Orders -->
+    <div class="data-table">
+        <div class="table-header">
+            <h2>Recent Orders</h2>
+            <a href="{{ url_for('admin_orders') }}" class="btn-admin btn-primary">View All</a>
+        </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in stats.recent_orders %}
+                    <tr>
+                        <td>#{{ order.id }}</td>
+                        <td>{{ order.user.name }}</td>
+                        <td>${{ "%.2f"|format(order.total) }}</td>
+                        <td>{{ order.status }}</td>
+                        <td>{{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Low Stock Products -->
+    <div class="data-table">
+        <div class="table-header">
+            <h2>Low Stock Products</h2>
+            <a href="{{ url_for('admin_products') }}" class="btn-admin btn-primary">View All</a>
+        </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Stock</th>
+                        <th>Price</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in stats.low_stock_products %}
+                    <tr>
+                        <td>{{ product.name }}</td>
+                        <td>{{ product.stock }}</td>
+                        <td>${{ "%.2f"|format(product.price) }}</td>
+                        <td>
+                            <a href="{{ url_for('admin_edit_product', id=product.id) }}" class="btn-icon btn-edit">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

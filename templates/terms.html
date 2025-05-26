@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Terms and Conditions{% endblock %}
+
+{% block content %}
+<div class="terms-container">
+    <h1>Terms and Conditions</h1>
+    <p>Welcome to Modern E-Shop. By accessing or using our website, you agree to comply with and be bound by the following terms and conditions:</p>
+    
+    <h2>1. General</h2>
+    <p>These terms govern your use of our website and services. By using our website, you agree to these terms in full.</p>
+    
+    <h2>2. Privacy</h2>
+    <p>Your privacy is important to us. Please review our <a href="{{ url_for('privacy') }}">Privacy Policy</a> to understand how we collect, use, and protect your information.</p>
+    
+    <h2>3. Orders</h2>
+    <p>All orders are subject to availability and confirmation of the order price. We reserve the right to refuse any order.</p>
+    
+    <h2>4. Payments</h2>
+    <p>Payments must be made using the methods provided during checkout. All transactions are secure and encrypted.</p>
+    
+    <h2>5. Returns and Refunds</h2>
+    <p>For information on returns and refunds, please refer to our <a href="#">Returns Policy</a>.</p>
+    
+    <h2>6. Limitation of Liability</h2>
+    <p>We are not liable for any damages arising from the use of our website or services.</p>
+    
+    <h2>7. Changes to Terms</h2>
+    <p>We reserve the right to update these terms at any time. Please check this page regularly for updates.</p>
+    
+    <h2>8. Contact Us</h2>
+    <p>If you have any questions about these terms, please <a href="{{ url_for('contact') }}">contact us</a>.</p>
+</div>
+{% endblock %}

@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/product.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="product-detail">
+    <div class="product-gallery">
+        <div class="main-image">
+            <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}">
+        </div>
+        <div class="image-thumbnails">
+            <!-- Add more product images here if available -->
+            <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}" class="active">
+            <img src="{{ url_for('static', filename='images/placeholder.jpg') }}" alt="Product view 2">
+            <img src="{{ url_for('static', filename='images/placeholder.jpg') }}" alt="Product view 3">
+        </div>
+    </div>
+
+    <div class="product-info">
+        <h1 class="product-title">{{ product.name }}</h1>
+        
+        <div class="product-meta">
+            <div class="product-rating">
+                {% for _ in range(product.rating|int) %}
+                    <i class="fas fa-star"></i>
+                {% endfor %}
+                {% if product.rating % 1 != 0 %}
+                    <i class="fas fa-star-half-alt"></i>
+                {% endif %}
+                <span>({{ product.rating }})</span>
+            </div>
+            <div class="product-reviews">
+                <a href="#reviews">{{ product.review_count }} Reviews</a>
+            </div>     
+        </div>
+
+        <div class="product-price">
+            <span class="current-price">${{ "%.2f"|format(product.price) }}</span>
+            {% if product.original_price %}
+                <span class="original-price">${{ "%.2f"|format(product.original_price) }}</span>
+                <span class="discount">{{ ((1 - product.price/product.original_price) * 100)|round|int }}% OFF</span>
+            {% endif %}
+        </div>
+
+        <div class="product-actions">
+            <div class="quantity-selector">
+                <button class="qty-btn minus"><i class="fas fa-minus"></i></button>
+                <input type="number" value="1" min="1" max="99" id="quantity">
+                <button class="qty-btn plus"><i class="fas fa-plus"></i></button>
+            </div>
+            <button class="add-to-cart-btn" data-product-id="{{ product.id }}">
+                <i class="fas fa-cart-plus"></i>
+                Add to Cart
+            </button>
+            <button class="wishlist-btn" data-product-id="{{ product.id }}">
+                <i class="far fa-heart"></i>
+            </button>
+        </div>
+
+        <div class="product-description">
+            <h2>Description</h2>
+            <p>{{ product.description }}</p>
+        </div>
+
+        <div class="product-details">
+            <h2>Product Details</h2>
+            <table class="details-table">
+                <tr>
+                    <th>Category</th>
+                    <td>{{ product.category }}</td>
+                </tr>
+                <tr>
+                    <th>SKU</th>
+                    <td>{{ product.id }}</td>
+                </tr>
+                <!-- Add more product details as needed -->
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="contact-supplier">
+    <h2>Contact Supplier</h2>
+    <form id="contactForm" class="contact-form">
+        <input type="hidden" id="productName" value="{{ product.name }}">
+        <div class="form-group">
+            <label for="email">Your Email</label>
+            <input type="email" id="email" required>
+        </div>
+        <div class="form-group">
+            <label for="message">Message</label>
+            <textarea id="message" required rows="4"></textarea>
+        </div>
+        <button type="submit" class="submit-btn">
+            <i class="fas fa-paper-plane"></i>
+            Send Message
+        </button>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/product.js') }}"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+{% endblock %}
